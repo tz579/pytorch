@@ -8587,9 +8587,6 @@
 
 - func: _csr_to_block_csr(Tensor self, int[2] block_size) -> Tensor
   python_module: sparse
-  dispatch:
-    SparseCsrCPU: _csr_to_block_csr_cpu
-    SparseCsrCUDA: _csr_to_block_csr_cuda
 
 ## NN wrappers
 
