@@ -763,6 +763,15 @@ void initJITBindings(PyObject* module) {
           &tensorExprDynamicShapeFusionEnabled)
       .def("_jit_texpr_reductions_enabled", &texprReductionsEnabled)
       .def(
+          "_jit_texpr_add_specialiazation_detection_pass",
+          &tensorexpr::addTensorTypeSpecializationDetectionPass)
+      .def(
+          "_jit_texpr_remove_specialiazation_detection_pass",
+          &tensorexpr::removeTensorTypeSpecializationDetectionPass)
+      .def(
+          "_jit_custom_pass_has_specialiazed_tensors",
+          &tensorexpr::passDetectedSpecializedTensors)
+      .def(
           "_jit_set_te_generate_block_code",
           [](bool gen_block_code) {
             using namespace torch::jit::tensorexpr;
@@ -809,7 +818,10 @@ void initJITBindings(PyObject* module) {
           })
       .def(
           "_jit_pass_fuse_tensorexprs",
-          [](std::shared_ptr<Graph>& g) { return FuseTensorExprs(g); })
+          [](std::shared_ptr<Graph>& g) {
+            FuseTensorExprs(g);
+            RemoveTensorTypeSpecializations(g);
+          })
       .def(
           "_jit_fuser_get_fused_kernel_code",
           [](Graph& g, const std::vector<at::Tensor>& inps) {
