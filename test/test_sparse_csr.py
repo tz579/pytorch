@@ -759,14 +759,15 @@ class TestSparseCSR(TestCase):
             for op_b, op_out in itertools.product([True, False], repeat=2):
                 self.run_test_block_addmm_addmv(torch.addmm, c, a, b, op_b, op_out, dtype=dtype, device=device)
 
-    @parametrize("block_size", [1, 2, 3])
+    @parametrize("block_size", [2, 3])
     @parametrize("index_dtype", [torch.int32, torch.int64])
     @skipCPUIfNoMklSparse
     @unittest.skipIf(not TEST_SCIPY, "SciPy not found")
     @dtypes(torch.float32, torch.float64, torch.complex64, torch.complex128)
     def test_block_addmv(self, device, dtype, index_dtype, block_size):
-        if (TEST_WITH_ROCM or not TEST_CUSPARSE_GENERIC) and block_size == 1:
-            return
+        # TODO: Explicitly disable block size 1 support
+        # if (TEST_WITH_ROCM or not TEST_CUSPARSE_GENERIC) and block_size == 1:
+        #     return
         for (m, k), noncontiguous in zip(itertools.product([1, 5], repeat=2), [True, False]):
             nnz = random.randint(0, m * k)
             if not noncontiguous:
