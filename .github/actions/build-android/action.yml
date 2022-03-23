@@ -24,11 +24,16 @@ inputs:
   branch:
     required: true
     description: What branch we are building on.
+outputs:
+  container_id:
+    description: Docker container identifier used to build the artifacts
+    value: ${{ steps.build.outputs.container_id }}
 
 runs:
   using: composite
   steps:
     - name: Build-${{ inputs.arch }}
+      id: build
       shell: bash
       env:
         BRANCH: ${{ inputs.branch }}
@@ -74,3 +79,4 @@ runs:
         # Copy install binaries back
         mkdir -p "${GITHUB_WORKSPACE}/build_android_install_${MATRIX_ARCH}"
         docker cp "${container_name}:/var/lib/jenkins/workspace/build_android/install" "${GITHUB_WORKSPACE}/build_android_install_${MATRIX_ARCH}"
+        echo "::set-output name=container_id::${container_name}"
